@@ -29,7 +29,7 @@ op = ops.chain([
 
 # TODO: Create the LinearClassifier, loss function and optimizer. 
 training_dataset = PetsDataset("../cifar-10-batches-py/", Subset.TRAINING)
-
+print(training_dataset)
 '''
 TODO: Train a model for multiple epochs, measure the classification accuracy on the validation dataset throughout the training and save the best performing model. 
 After training, measure the classification accuracy of the best perfroming model on the test dataset. Document your findings in the report.

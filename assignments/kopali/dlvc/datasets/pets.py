@@ -39,17 +39,17 @@ class PetsDataset(ClassificationDataset):
 
         # Load data from files
         data = []
-        pprint(file_names)
         for file_name in file_names:
             with open(file_name, "rb") as f:
                 batch = pickle.load(f, encoding="bytes")
 
             for i in range(len(batch[b"data"])):
-                sample_idx = len(data)  # Index of the sample in the dataset
-                sample_data = batch[b"data"][i]
-                sample_label = batch[b"labels"][i]
-                sample = Sample(idx=sample_idx, data=sample_data, label=sample_label)
-                data.append(sample)
+                if batch[b"labels"][i] == 0 or batch[b"labels"][i] == 1:
+                    sample_idx = len(data)  # Index of the sample in the dataset
+                    sample_data = batch[b"data"][i]
+                    sample_label = batch[b"labels"][i]
+                    sample = Sample(idx=sample_idx, data=sample_data, label=sample_label)
+                    data.append(sample)
 
         for i in range(10):
             print(data[i])   
@@ -70,7 +70,7 @@ class PetsDataset(ClassificationDataset):
         Raises IndexError if the index is out of bounds. Negative indices are not supported.
         '''
 
-        if idx < 0 or idx >= len(self):
+        if idx < 0 or idx >= len(self.Sample):
             raise IndexError(f"Index {idx} is out of bounds for dataset of size {len(self)}")
 
         x = self.data[idx]
