@@ -31,7 +31,7 @@ class PetsDataset(ClassificationDataset):
 
         # Define file names for the subsets
         if subset == Subset.TRAINING:
-            file_names = [os.path.join(fdir, f"data_batch_{i}") for i in range(1, 5)]
+            file_names = [os.path.join(fdir, f"data_batch_{i}") for i in range(1, 4)]
         elif subset == Subset.VALIDATION:
             file_names = [os.path.join(fdir, "data_batch_5")]
         elif subset == Subset.TEST:
@@ -39,21 +39,19 @@ class PetsDataset(ClassificationDataset):
 
         # Load data from files
         data = []
-        labels = []
         for file_name in file_names:
             with open(file_name, "rb") as f:
                 batch = pickle.load(f, encoding="bytes")
-            data.append(batch[b"data"])
-            labels.append(batch[b"labels"])
-        data = np.concatenate(data, axis=0)
-        labels = np.concatenate(labels, axis=0)
 
-        # Print the first few items of the data variable for 10 samples
+            for i in range(len(batch[b"data"])):
+                sample_idx = len(data)  # Index of the sample in the dataset
+                sample_data = batch[b"data"][i]
+                sample_label = batch[b"labels"][i]
+                sample = Sample(idx=sample_idx, data=sample_data, label=sample_label)
+                data.append(sample)
+
         for i in range(10):
-            print(labels[i])  # Print first 10 elements of the data array
-
-        return labels
-
+            print(data[i])   
 
         
 
