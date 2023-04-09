@@ -31,7 +31,7 @@ class PetsDataset(ClassificationDataset):
 
         # Define file names for the subsets
         if subset == Subset.TRAINING:
-            file_names = [os.path.join(fdir, f"data_batch_{i}") for i in range(1, 4)]
+            file_names = [os.path.join(fdir, f"data_batch_{i}") for i in range(1, 5)]
         elif subset == Subset.VALIDATION:
             file_names = [os.path.join(fdir, "data_batch_5")]
         elif subset == Subset.TEST:
@@ -39,6 +39,7 @@ class PetsDataset(ClassificationDataset):
 
         # Load data from files
         data = []
+        pprint(file_names)
         for file_name in file_names:
             with open(file_name, "rb") as f:
                 batch = pickle.load(f, encoding="bytes")
