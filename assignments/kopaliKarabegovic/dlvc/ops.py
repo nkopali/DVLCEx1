@@ -65,10 +65,8 @@ def hwc2chw() -> Op:
 
     # TODO implement (see np.transpose)
 
-    def op(sample: np.ndarray) -> np.ndarray:
-        return np.transpose(sample, (2, 0, 1))
+    pass
 
-    return op
 
 def hflip() -> Op:
     '''
@@ -76,14 +74,8 @@ def hflip() -> Op:
     '''
 
     # TODO implement (numpy.flip will be helpful)
+    pass
 
-    def op(sample: np.ndarray) -> np.ndarray:
-        if np.random.random() < 0.5:
-            return np.flip(sample, axis=1)
-        else:
-            return sample
-
-    return op
 
 def rcrop(sz: int, pad: int, pad_mode: str) -> Op:
     '''
@@ -96,19 +88,4 @@ def rcrop(sz: int, pad: int, pad_mode: str) -> Op:
     # TODO implement
     # https://numpy.org/doc/stable/reference/generated/numpy.pad.html will be helpful
 
-    def op(sample: np.ndarray) -> np.ndarray:
-        if pad > 0:
-            sample = np.pad(sample, ((pad, pad), (pad, pad), (0, 0)), mode=pad_mode)
-
-        height, width = sample.shape[:2]
-        if sz > height or sz > width:
-            raise ValueError(f"sz ({sz}) exceeds array height ({height}) or width ({width}) after padding")
-
-        top = np.random.randint(0, height - sz + 1)
-        left = np.random.randint(0, width - sz + 1)
-        bottom = top + sz
-        right = left + sz
-
-        return sample[top:bottom, left:right, :]
-
-    return op
+    pass

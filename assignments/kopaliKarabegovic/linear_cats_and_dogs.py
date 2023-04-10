@@ -25,7 +25,12 @@ op = ops.chain([
     ops.mul(1/127.5),
 ])
 
+pets = PetsDataset("../cifar-10-batches-py/", Subset.TRAINING)
 
+batch = BatchGenerator(pets,pets.__len__(),True,op)
+
+for item in batch.__iter__():
+  print(item)
 # TODO: Create the LinearClassifier, loss function and optimizer. 
 
 '''
@@ -34,12 +39,12 @@ After training, measure the classification accuracy of the best perfroming model
 '''
 
 
-pets = PetsDataset("../cifar-10-batches-py/", Subset.TRAINING)
-print(type(pets.data))
-print(pets.__len__())
-print(pets.num_classes())
-img = pets.__getitem__(1)
-img = torch.Tensor(img)
-print(type(img))
-print(img.shape)
-cv2.imwrite('test.png', img.numpy())
+# pets = PetsDataset("../cifar-10-batches-py/", Subset.TRAINING)
+# print(type(pets.data))
+# print(pets.__len__())
+# print(pets.num_classes())
+# img = pets.__getitem__(1)
+# img = torch.Tensor(img)
+# print(type(img))
+# print(img.shape)
+# cv2.imwrite('test.png', img.numpy())

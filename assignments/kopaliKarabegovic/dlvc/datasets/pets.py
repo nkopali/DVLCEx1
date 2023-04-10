@@ -60,8 +60,6 @@ class PetsDataset(ClassificationDataset):
                     
                     self.data.append(sample_data)
 
-        print([self.labels[i] for i in range(10)]) # checking first 10 labels if they are correct
-
         self.data = np.array(self.data)
         self.labels = np.array(self.labels)
     
@@ -71,7 +69,7 @@ class PetsDataset(ClassificationDataset):
         Returns the number of samples in the dataset.
         '''
 
-        return len(self.data)
+        return int(len(self.data))
 
 
     def __getitem__(self, idx: int) -> Sample:
@@ -79,7 +77,8 @@ class PetsDataset(ClassificationDataset):
         Returns the idx-th sample in the dataset.
         Raises IndexError if the index is out of bounds. Negative indices are not supported.
         '''
-
+        print(type(idx))
+        print(type(len(self.data)))
         if idx < 0 or idx >= len(self.data):
             raise IndexError(f"Index {idx} is out of bounds for dataset of size {len(self)}")
 

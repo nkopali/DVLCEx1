@@ -48,10 +48,27 @@ class BatchGenerator:
         if num > len(dataset):
             raise ValueError("The number of samples per batch should be less than or equal to the dataset size")
 
-        self.dataset = dataset
-        self.num = num
-        self.shuffle = shuffle
-        self.op = op
+        data = dataset.data
+        if op:
+            data = op(dataset.data)
+        
+        indexed_elements = [(index,element,label) for index, (element, label) in enumerate(zip(data, dataset.labels))]
+
+        if shuffle:
+            np.random.shuffle(indexed_elements)
+        
+        chunks = [indexed_elements[i:i + num] for i in range(0, len(indexed_elements), num)]
+
+        batches = np.array([])
+
+        for i in chunks:
+            data, labels, idx = [], [], []
+            for index, element, label in i:
+                data.append(element.flatten().astype(np.float32))
+                labels.append(label.astype(np.int64))
+                idx.append(index)
+            batches = np.append(batches, Batch(np.stack(data, axis=0), np.stack(labels, axis=0), np.stack(idx, axis=0)))
+        self.batches = batches
 
     def __len__(self) -> int:
         '''
@@ -67,15 +84,5 @@ class BatchGenerator:
         Iterate over the wrapped dataset, returning the data as batches.
         '''
 
-        indices = np.arange(len(self.dataset))
-        if self.shuffle:
-            np.random.shuffle(indices)
-        for i in range(0, len(indices), self.num):
-            batch_indices = indices[i:i + self.num]
-            batch = Batch()
-            batch.idx = batch_indices
-            batch.data = self.dataset.get_data(batch_indices)
-            batch.label = self.dataset.get_label(batch_indices)
-            if self.op is not None:
-                batch.data = self.op(batch.data)
-            yield batch
+        for i in self.batches:
+            yield i
