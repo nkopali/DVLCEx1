@@ -59,16 +59,27 @@ class BatchGenerator:
         
         chunks = [indexed_elements[i:i + num] for i in range(0, len(indexed_elements), num)]
 
-        batches = np.array([])
+        # Initialize an empty list to store the batches
+        batches = []
 
-        for i in chunks:
-            data, labels, idx = [], [], []
-            for index, element, label in i:
+        # Loop over the chunks
+        for chunk in chunks:
+            # Initialize empty lists to store the data, labels, and indices
+            data, labels, indices = [], [], []
+            
+            # Loop over the elements in the chunk
+            for index, element, label in chunk:
+                # Append the flattened element, the label, and the index to their respective lists
                 data.append(element.flatten().astype(np.float32))
                 labels.append(label.astype(np.int64))
-                idx.append(index)
-            batches = np.append(batches, Batch(np.stack(data, axis=0), np.stack(labels, axis=0), np.stack(idx, axis=0)))
-        self.batches = batches
+                indices.append(index)
+            
+            # Create a Batch object from the stacked data, labels, and indices arrays, and append it to the batches list
+            batch = Batch(np.stack(data, axis=0), np.stack(labels, axis=0), np.stack(indices, axis=0))
+            batches.append(batch)
+
+        # Set the batches attribute of the object to the list of Batch objects
+        self.batches = np.array(batches)
 
     def __len__(self) -> int:
         '''

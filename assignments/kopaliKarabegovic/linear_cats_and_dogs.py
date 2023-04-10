@@ -25,7 +25,7 @@ op = ops.chain([
     ops.mul(1/127.5),
 ])
 
-pets = PetsDataset("../cifar-10-batches-py/", Subset.TRAINING)
+pets = PetsDataset("assignments\cifar-10-batches-py", Subset.TRAINING)
 
 batch = BatchGenerator(pets,500,True,op)
 
