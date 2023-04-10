@@ -1,5 +1,5 @@
 import typing
-
+import numpy as np
 from .dataset import Dataset
 from .ops import Op
 
@@ -36,27 +36,46 @@ class BatchGenerator:
         Raises TypeError on invalid argument types.
         Raises ValueError on invalid argument values, such as if num is > len(dataset).
         '''
+        if not isinstance(dataset, Dataset):
+            raise TypeError("The dataset should be an instance of Dataset class")
+        if not isinstance(num, int) or num <= 0:
+            raise TypeError("The number of samples per batch should be a positive integer")
+        if num > len(dataset):
+            raise TypeError("The number of samples per batch should not be bigger than the length of dataset")
+        if not isinstance(shuffle, bool):
+            raise TypeError("The shuffle argument should be boolean")
 
-        # TODO implement
+        if num > len(dataset):
+            raise ValueError("The number of samples per batch should be less than or equal to the dataset size")
 
-        pass
+        self.dataset = dataset
+        self.num = num
+        self.shuffle = shuffle
+        self.op = op
 
     def __len__(self) -> int:
         '''
         Returns the total number of batches the dataset is split into.
             This is identical to the total number of batches yielded every time the __iter__ method is called.
         '''
+        
+        return int(np.ceil(len(self.dataset) / self.num))
 
-        # TODO implement
-
-        pass
 
     def __iter__(self) -> typing.Iterable[Batch]:
         '''
         Iterate over the wrapped dataset, returning the data as batches.
         '''
 
-        # TODO implement
-        # The "yield" keyword makes this easier
-
-        pass
+        indices = np.arange(len(self.dataset))
+        if self.shuffle:
+            np.random.shuffle(indices)
+        for i in range(0, len(indices), self.num):
+            batch_indices = indices[i:i + self.num]
+            batch = Batch()
+            batch.idx = batch_indices
+            batch.data = self.dataset.get_data(batch_indices)
+            batch.label = self.dataset.get_label(batch_indices)
+            if self.op is not None:
+                batch.data = self.op(batch.data)
+            yield batch

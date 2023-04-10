@@ -23,36 +23,40 @@ def type_cast(dtype: np.dtype) -> Op:
     Cast numpy arrays to the given type.
     '''
 
-    # TODO implement (see above for guidance).
+    def op(sample: np.ndarray) -> np.ndarray:
+        return sample.astype(dtype)
 
-    pass
+    return op
 
 def vectorize() -> Op:
     '''
     Vectorize numpy arrays via "numpy.ravel()".
     '''
 
-    # TODO implement (see above for guidance).
+    def op(sample: np.ndarray) -> np.ndarray:
+        return np.ravel(sample)
 
-    pass
+    return op
 
 def add(val: float) -> Op:
     '''
     Add a scalar value to all array elements.
     '''
 
-    # TODO implement (see above for guidance).
+    def op(sample: np.ndarray) -> np.ndarray:
+        return sample + val
 
-    pass
+    return op
 
 def mul(val: float) -> Op:
     '''
     Multiply all array elements by the given scalar.
     '''
 
-    # TODO implement (see above for guidance).
+    def op(sample: np.ndarray) -> np.ndarray:
+        return sample * val
 
-    pass
+    return op
 
 def hwc2chw() -> Op:
     '''
@@ -61,7 +65,10 @@ def hwc2chw() -> Op:
 
     # TODO implement (see np.transpose)
 
-    pass
+    def op(sample: np.ndarray) -> np.ndarray:
+        return np.transpose(sample, (2, 0, 1))
+
+    return op
 
 def hflip() -> Op:
     '''
@@ -70,7 +77,13 @@ def hflip() -> Op:
 
     # TODO implement (numpy.flip will be helpful)
 
-    pass
+    def op(sample: np.ndarray) -> np.ndarray:
+        if np.random.random() < 0.5:
+            return np.flip(sample, axis=1)
+        else:
+            return sample
+
+    return op
 
 def rcrop(sz: int, pad: int, pad_mode: str) -> Op:
     '''
@@ -83,4 +96,19 @@ def rcrop(sz: int, pad: int, pad_mode: str) -> Op:
     # TODO implement
     # https://numpy.org/doc/stable/reference/generated/numpy.pad.html will be helpful
 
-    pass
+    def op(sample: np.ndarray) -> np.ndarray:
+        if pad > 0:
+            sample = np.pad(sample, ((pad, pad), (pad, pad), (0, 0)), mode=pad_mode)
+
+        height, width = sample.shape[:2]
+        if sz > height or sz > width:
+            raise ValueError(f"sz ({sz}) exceeds array height ({height}) or width ({width}) after padding")
+
+        top = np.random.randint(0, height - sz + 1)
+        left = np.random.randint(0, width - sz + 1)
+        bottom = top + sz
+        right = left + sz
+
+        return sample[top:bottom, left:right, :]
+
+    return op
