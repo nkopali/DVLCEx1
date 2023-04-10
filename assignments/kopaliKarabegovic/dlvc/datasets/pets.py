@@ -3,7 +3,7 @@ from ..dataset import Sample, Subset, ClassificationDataset
 import os
 import numpy as np
 import pickle
-
+import cv2
 
 class PetsDataset(ClassificationDataset):
     '''
@@ -49,21 +49,20 @@ class PetsDataset(ClassificationDataset):
                     sample_data = batch[b"data"][i]
                     sample_label = 0 if batch[b"labels"][i] == 3 else 1
                     self.labels.append(sample_label)
-                     # reshape the 1D image array to a 3D array of shape (32, 32, 3)
-                    print(str(sample_data))
+                    # reshape the 1D image array to a 3D array of shape (32, 32, 3)
+                    img = []
+                    for j in range(1024):
+                        img.append(sample_data[j + 2048])
+                        img.append(sample_data[j + 1024])
+                        img.append(sample_data[j])
+                    sample_data = np.array(img).reshape(32, 32, 3)
+                    
+                    self.data.append(sample_data)
 
-                    img = sample_data.reshape(32, 32, 3)
-                    
-                    # flip the order of the color channels from RGB to BGR
-                    img = img[::-1]
-                    
-                    # append the preprocessed image to the list of data
-                    self.data.append(img)
-                    # self.data.append(sample_data) 
+        print([self.labels[i] for i in range(10)]) # checking first 10 labels if they are correct
 
         self.data = np.array(self.data)
         self.labels = np.array(self.labels)
-        
     
 
     def __len__(self) -> int:
