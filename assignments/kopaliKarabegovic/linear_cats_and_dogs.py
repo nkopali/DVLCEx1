@@ -27,7 +27,7 @@ op = ops.chain([
 
 pets = PetsDataset("../cifar-10-batches-py/", Subset.TRAINING)
 
-batch = BatchGenerator(pets,pets.__len__(),True,op)
+batch = BatchGenerator(pets,500,True,op)
 
 for item in batch.__iter__():
   print(item)
