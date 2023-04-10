@@ -49,13 +49,14 @@ class PetsDataset(ClassificationDataset):
                     sample_data = batch[b"data"][i]
                     sample_label = 0 if batch[b"labels"][i] == 3 else 1
                     self.labels.append(sample_label)
-                    # reshape the 1D image array to a 3D array of shape (32, 32, 3)
+                    
+                    # Convert from RGB to BGR
                     img = []
                     for j in range(1024):
                         img.append(sample_data[j + 2048])
                         img.append(sample_data[j + 1024])
                         img.append(sample_data[j])
-                    sample_data = np.array(img).reshape(32, 32, 3)
+                    sample_data = np.array(img).reshape(32, 32, 3) 
                     
                     self.data.append(sample_data)
 
