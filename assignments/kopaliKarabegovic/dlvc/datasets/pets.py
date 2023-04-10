@@ -3,8 +3,7 @@ from ..dataset import Sample, Subset, ClassificationDataset
 import os
 import numpy as np
 import pickle
-from typing import List
-from pprint import pprint
+
 
 class PetsDataset(ClassificationDataset):
     '''
@@ -38,23 +37,34 @@ class PetsDataset(ClassificationDataset):
             file_names = [os.path.join(fdir, "test_batch")]
 
         # Load data from files
-        data = []
+        self.data = []
+        self.labels = []
+        
         for file_name in file_names:
             with open(file_name, "rb") as f:
                 batch = pickle.load(f, encoding="bytes")
 
             for i in range(len(batch[b"data"])):
-                if batch[b"labels"][i] == 0 or batch[b"labels"][i] == 1:
-                    sample_idx = len(data)  # Index of the sample in the dataset
+                if batch[b"labels"][i] == 3 or batch[b"labels"][i] == 5: # 3 is cats and 5 its dogs
                     sample_data = batch[b"data"][i]
-                    sample_label = batch[b"labels"][i]
-                    sample = Sample(idx=sample_idx, data=sample_data, label=sample_label)
-                    data.append(sample)
+                    sample_label = 0 if batch[b"labels"][i] == 3 else 1
+                    self.labels.append(sample_label)
+                     # reshape the 1D image array to a 3D array of shape (32, 32, 3)
+                    print(str(sample_data))
 
-        for i in range(10):
-            print(data[i])   
+                    img = sample_data.reshape(32, 32, 3)
+                    
+                    # flip the order of the color channels from RGB to BGR
+                    img = img[::-1]
+                    
+                    # append the preprocessed image to the list of data
+                    self.data.append(img)
+                    # self.data.append(sample_data) 
 
+        self.data = np.array(self.data)
+        self.labels = np.array(self.labels)
         
+    
 
     def __len__(self) -> int:
         '''
@@ -70,17 +80,13 @@ class PetsDataset(ClassificationDataset):
         Raises IndexError if the index is out of bounds. Negative indices are not supported.
         '''
 
-        if idx < 0 or idx >= len(self.Sample):
+        if idx < 0 or idx >= len(self.data):
             raise IndexError(f"Index {idx} is out of bounds for dataset of size {len(self)}")
 
-        x = self.data[idx]
-        y = self.labels[idx]
-
-        return Sample(x, y)
+        return self.data[idx]
 
     def num_classes(self) -> int:
         '''
         Returns the number of classes.
         '''
-
-        return 2
+        return len(set(self.labels))

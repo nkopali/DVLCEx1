@@ -3,8 +3,7 @@ from dlvc.dataset import Subset
 from dlvc.batches import BatchGenerator
 from dlvc.test import Accuracy
 import dlvc.ops as ops
-import numpy as np
-import torch
+import cv2, pickle, numpy as np, torch
 
 
 # TODO: Define the network architecture of your linear classifier.
@@ -28,11 +27,19 @@ op = ops.chain([
 
 
 # TODO: Create the LinearClassifier, loss function and optimizer. 
-training_dataset = PetsDataset("../cifar-10-batches-py/", Subset.TRAINING)
-print(training_dataset)
+
 '''
 TODO: Train a model for multiple epochs, measure the classification accuracy on the validation dataset throughout the training and save the best performing model. 
 After training, measure the classification accuracy of the best perfroming model on the test dataset. Document your findings in the report.
 '''
 
 
+pets = PetsDataset("../cifar-10-batches-py/", Subset.TRAINING)
+print(type(pets.data))
+print(pets.__len__())
+print(pets.num_classes())
+img = pets.__getitem__(1)
+img = torch.Tensor(img)
+print(type(img))
+print(img.shape)
+cv2.imwrite('test.png', img.numpy())
