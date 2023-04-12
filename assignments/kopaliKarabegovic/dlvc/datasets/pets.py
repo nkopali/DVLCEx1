@@ -5,6 +5,7 @@ import numpy as np
 import pickle
 import cv2
 
+
 class PetsDataset(ClassificationDataset):
     '''
     Dataset of cat and dog images from CIFAR-10 (class 0: cat, class 1: dog).
@@ -30,7 +31,8 @@ class PetsDataset(ClassificationDataset):
 
         # Define file names for the subsets
         if subset == Subset.TRAINING:
-            file_names = [os.path.join(fdir, f"data_batch_{i}") for i in range(1, 5)]
+            file_names = [os.path.join(
+                fdir, f"data_batch_{i}") for i in range(1, 5)]
         elif subset == Subset.VALIDATION:
             file_names = [os.path.join(fdir, "data_batch_5")]
         elif subset == Subset.TEST:
@@ -39,30 +41,29 @@ class PetsDataset(ClassificationDataset):
         # Load data from files
         self.data = []
         self.labels = []
-        
+
         for file_name in file_names:
             with open(file_name, "rb") as f:
                 batch = pickle.load(f, encoding="bytes")
 
             for i in range(len(batch[b"data"])):
-                if batch[b"labels"][i] == 3 or batch[b"labels"][i] == 5: # 3 is cats and 5 its dogs
+                if batch[b"labels"][i] == 3 or batch[b"labels"][i] == 5:  # 3 is cats and 5 its dogs
                     sample_data = batch[b"data"][i]
                     sample_label = 0 if batch[b"labels"][i] == 3 else 1
                     self.labels.append(sample_label)
-                    
+
                     # Convert from RGB to BGR
                     img = []
                     for j in range(1024):
                         img.append(sample_data[j + 2048])
                         img.append(sample_data[j + 1024])
                         img.append(sample_data[j])
-                    sample_data = np.array(img).reshape(32, 32, 3) 
-                    
+                    sample_data = np.array(img).reshape(32, 32, 3)
+
                     self.data.append(sample_data)
 
         self.data = np.array(self.data)
         self.labels = np.array(self.labels)
-    
 
     def __len__(self) -> int:
         '''
@@ -70,7 +71,6 @@ class PetsDataset(ClassificationDataset):
         '''
 
         return int(len(self.data))
-
 
     def __getitem__(self, idx: int) -> Sample:
         '''
@@ -80,7 +80,8 @@ class PetsDataset(ClassificationDataset):
         print(type(idx))
         print(type(len(self.data)))
         if idx < 0 or idx >= len(self.data):
-            raise IndexError(f"Index {idx} is out of bounds for dataset of size {len(self)}")
+            raise IndexError(
+                f"Index {idx} is out of bounds for dataset of size {len(self)}")
 
         return self.data[idx]
 

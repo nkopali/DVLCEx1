@@ -3,18 +3,21 @@ from dlvc.dataset import Subset
 from dlvc.batches import BatchGenerator
 from dlvc.test import Accuracy
 import dlvc.ops as ops
-import cv2, pickle, numpy as np, torch
+import cv2
+import pickle
+import numpy as np
+import torch
 
 
-# TODO: Define the network architecture of your linear classifier.
 class LinearClassifier(torch.nn.Module):
-  def __init__(self, input_dim, num_classes):
-      super(LinearClassifier, self).__init__()
-      self.fc = torch.nn.Linear(input_dim, num_classes)
+    def __init__(self, input_dim, num_classes):
+        super(LinearClassifier, self).__init__()
+        self.fc = torch.nn.Linear(input_dim, num_classes)
 
-  def forward(self, x):
-      x = self.fc(x)
-      return x
+    def forward(self, x):
+        x = self.fc(x)
+        return x
+
 
 op = ops.chain([
     ops.vectorize(),
@@ -25,24 +28,24 @@ op = ops.chain([
 
 training_data = PetsDataset("assignments\cifar-10-batches-py", Subset.TRAINING)
 test_data = PetsDataset("assignments\cifar-10-batches-py", Subset.TEST)
-validation_data = PetsDataset("assignments\cifar-10-batches-py", Subset.VALIDATION)
+validation_data = PetsDataset(
+    "assignments\cifar-10-batches-py", Subset.VALIDATION)
 
-num_of_samples_per_batch = 100
-train_batches = BatchGenerator(training_data,num_of_samples_per_batch, False)
-test_batches =  BatchGenerator(test_data,num_of_samples_per_batch, False)
-validation_batches = BatchGenerator(validation_data,num_of_samples_per_batch, False)
-
-# TODO: Create the LinearClassifier, loss function and optimizer.
+num_of_samples_per_batch = 200
+train_batches = BatchGenerator(
+    training_data, num_of_samples_per_batch, False, op)
+test_batches = BatchGenerator(test_data, num_of_samples_per_batch, False, op)
+validation_batches = BatchGenerator(
+    validation_data, num_of_samples_per_batch, False, op)
 
 # model for training
-model = LinearClassifier(3072,training_data.num_classes())#.to(device)
+model = LinearClassifier(3072, training_data.num_classes())
 
-#parameters
+# parameters
 learning_rate = 0.0001
 epochs = 100
 criterion = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
-
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 print("Start of the training")
 best_acc_val = Accuracy()
