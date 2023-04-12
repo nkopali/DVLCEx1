@@ -11,6 +11,7 @@ class LinearClassifier(torch.nn.Module):
   def __init__(self, input_dim, num_classes):
       super(LinearClassifier, self).__init__()
       self.fc = torch.nn.Linear(input_dim, num_classes)
+      self.softmax = torch.nn.Softmax(dim=1)
 
   def forward(self, x):
       x = self.fc(x)
@@ -27,18 +28,10 @@ training_data = PetsDataset("../cifar-10-batches-py", Subset.TRAINING)
 test_data = PetsDataset("../cifar-10-batches-py", Subset.TEST)
 validation_data = PetsDataset("../cifar-10-batches-py", Subset.VALIDATION)
 
-
-train_len = training_data.__len__()
-test_len = test_data.__len__()
-validation_len = validation_data.__len__()
-
 num_of_samples_per_batch = 100
 train_batches = BatchGenerator(training_data,num_of_samples_per_batch, False)
 test_batches =  BatchGenerator(test_data,num_of_samples_per_batch, False)
 validation_batches = BatchGenerator(validation_data,num_of_samples_per_batch, False)
-
-
-
 
 # TODO: Create the LinearClassifier, loss function and optimizer.
 
