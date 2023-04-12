@@ -85,8 +85,8 @@ class Accuracy(PerformanceMeasure):
             raise ValueError('Input shapes must be (s,c) and (s,), respectively.')
         if prediction.shape[0] != target.shape[0]:
             raise ValueError('The first dimension of the inputs must match.')
-        if not (np.issubdtype(prediction.dtype, np.floating) and np.all(prediction >= 0.0) and np.all(prediction <= 1.0)):
-            raise ValueError('Prediction values must be between 0 and 1.')
+        """if not (np.issubdtype(prediction.dtype, np.floating) and np.all(prediction >= 0.0) and np.all(prediction <= 1.0)):
+            raise ValueError('Prediction values must be between 0 and 1.')"""
         if not (np.issubdtype(target.dtype, np.integer) and np.all(target >= 0) and np.all(target <= prediction.shape[1]-1)):
             raise ValueError('Target values must be integers between 0 and c-1.')
 

@@ -24,9 +24,9 @@ op = ops.chain([
     ops.mul(1/127.5),
 ])
 
-training_data = PetsDataset("../cifar-10-batches-py", Subset.TRAINING)
-test_data = PetsDataset("../cifar-10-batches-py", Subset.TEST)
-validation_data = PetsDataset("../cifar-10-batches-py", Subset.VALIDATION)
+training_data = PetsDataset("assignments\cifar-10-batches-py", Subset.TRAINING)
+test_data = PetsDataset("assignments\cifar-10-batches-py", Subset.TEST)
+validation_data = PetsDataset("assignments\cifar-10-batches-py", Subset.VALIDATION)
 
 num_of_samples_per_batch = 100
 train_batches = BatchGenerator(training_data,num_of_samples_per_batch, False)
@@ -46,34 +46,37 @@ optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
 
 
 print("Start of the training")
-best_acc_val = 0
+best_acc_val = Accuracy()
+acc_val = Accuracy()
 for epoch in range(epochs):
+
     print(f"epoch: {epoch+1}")
     iter = train_batches.__iter__()
-    for batch_number,batch in enumerate(iter):
-        #print(f"epoch: {epoch} - batch:{batch_number}")
+
+    total_loss = 0
+    for batch_number, batch in enumerate(iter):
         model.train()
         data = batch.data
         labels = batch.label
         data = torch.from_numpy(data)
         labels = torch.from_numpy(labels)
-        #forward
+        # forward
         scores = model(data)
-        loss = criterion(scores,labels)
-        #print(f"loss: {round(loss.item(),2)}")
-        #backward
-        optimizer.zero_grad() #grad is zero for each batch
+        loss = criterion(scores, labels)
+        total_loss += loss.item()
+
+        # backward
+        optimizer.zero_grad()  # grad is zero for each batch
         loss.backward()
-        #gradient descent, updateing the weights
+        # gradient descent, updating the weights
         optimizer.step()
 
-        #model eval for training data
+    print(f"total training loss for epoch {epoch+1}: {total_loss:.4f}")
+
+    # model eval for training data
     model.eval()
 
-    num_correct = 0
-    num_samples = 0
-    model.eval()
-    best_acc = 0
+    acc_val.reset()
     iter = validation_batches.__iter__()
     with torch.no_grad():
         for batch in iter:
@@ -83,44 +86,12 @@ for epoch in range(epochs):
             labels = torch.from_numpy(labels)
 
             scores = model(data)
-            _, predictions = scores.max(1)
-            num_correct += (predictions == labels).sum()
-            num_samples += predictions.size(0)
-            acc = float(num_correct) / float(num_samples) * 100
-            if acc > best_acc:
-                best_acc = acc
-        print(f"validation accuracy is: {round(acc, 2)}%")
-print(f"best validation acc is: {round(best_acc,2)}%")
+            acc_val.update(scores.detach().numpy(), labels.numpy())
+        print(f"validation accuracy is: {acc_val.__str__()}")
 
+        if best_acc_val.__lt__(acc_val):
+            best_acc_val._correct = acc_val._correct
+            best_acc_val._total = acc_val._total
 
-def check_accuracy(loader,model):
-    num_correct = 0
-    num_samples = 0
-    best_acc = 0
-    model.eval()
-    iter = loader.__iter__()
-    with torch.no_grad():
-        for batch in iter:
-            data = batch.data
-            labels = batch.label
-            data = torch.from_numpy(data)
-            labels = torch.from_numpy(labels)
-
-            scores = model(data)
-            _, predictions = scores.max(1)
-            num_correct += (predictions == labels).sum()
-            num_samples += predictions.size(0)
-            acc = float(num_correct)/float(num_samples)*100
-            if acc > best_acc:
-                best_acc = acc
-            print(f"Accuracy is: {round(acc,2)}%")
-    print(f"best test acc is: {round(best_acc,2)}%")
-"""
-print("Train accuracy: ")
-check_accuracy(train_batches,model)
-
-print("validation accuracy: ")
-check_accuracy(validation_batches,model)"""
-
-print("Test accuracy is: ")
-check_accuracy(test_batches,model)
+print(f"best validation acc is: {best_acc_val.__str__()}")
+print("End of the training")
