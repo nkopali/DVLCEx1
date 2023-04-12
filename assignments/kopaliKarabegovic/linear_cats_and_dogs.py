@@ -11,7 +11,6 @@ class LinearClassifier(torch.nn.Module):
   def __init__(self, input_dim, num_classes):
       super(LinearClassifier, self).__init__()
       self.fc = torch.nn.Linear(input_dim, num_classes)
-      self.softmax = torch.nn.Softmax(dim=1)
 
   def forward(self, x):
       x = self.fc(x)
