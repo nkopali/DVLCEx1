@@ -49,7 +49,7 @@ best_acc_val = Accuracy()
 acc_val = Accuracy()
 for epoch in range(epochs):
 
-    print(f"epoch: {epoch+1}")
+    print(f"epoch {epoch+1}")
     iter = train_batches.__iter__()
 
     total_loss = 0
@@ -70,7 +70,7 @@ for epoch in range(epochs):
         # gradient descent, updating the weights
         optimizer.step()
 
-    print(f"total training loss for epoch {epoch+1}: {total_loss:.4f}")
+    print(f"train loss: {total_loss:.4f}")
 
     # model eval for training data
     model.eval()
@@ -86,11 +86,29 @@ for epoch in range(epochs):
 
             scores = model(data)
             acc_val.update(scores.detach().numpy(), labels.numpy())
-        print(f"validation accuracy is: {acc_val.__str__()}")
+        print(f"val acc: {acc_val.__str__()}")
 
         if best_acc_val.__lt__(acc_val):
             best_acc_val._correct = acc_val._correct
             best_acc_val._total = acc_val._total
 
-print(f"best validation acc is: {best_acc_val.__str__()}")
+print("-" * 50)
+print(f"val acc (best): {best_acc_val.__str__()}")
+
+# Model evaluation on test data
+model.eval()
+test_acc = Accuracy()
+iter = test_batches.__iter__()
+with torch.no_grad():
+    for batch in iter:
+        data = batch.data
+        labels = batch.label
+        data = torch.from_numpy(data)
+        labels = torch.from_numpy(labels)
+
+        scores = model(data)
+        test_acc.update(scores.detach().numpy(), labels.numpy())
+
+print(f"test acc: {test_acc.__str__()}")
+
 print("End of the training")
