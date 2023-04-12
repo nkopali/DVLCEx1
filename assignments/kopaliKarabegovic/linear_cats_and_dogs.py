@@ -36,16 +36,13 @@ validation_batches = BatchGenerator(validation_data,num_of_samples_per_batch, Fa
 # TODO: Create the LinearClassifier, loss function and optimizer.
 
 # model for training
-input_size = 3072 # 32*32*3
-model = LinearClassifier(input_size,training_data.num_classes())#.to(device)
-
+model = LinearClassifier(3072,training_data.num_classes())#.to(device)
 
 #parameters
 learning_rate = 0.0001
 epochs = 100
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
-
 
 
 print("Start of the training")
@@ -60,14 +57,6 @@ for epoch in range(epochs):
         labels = batch.label
         data = torch.from_numpy(data)
         labels = torch.from_numpy(labels)
-        """
-        print(f"data 0  iz epoch petlje{data[0]}")
-        print(f"data leng 0  iz epoch petlje{len(data[0])}")
-        print(f"data  iz epoch petlje{data}")
-        print(f"data type iz epoch petlje{type(data)}")
-        print(f"data leng iz epoch petlje{len(data)}")"""
-        #data = data.to(device)
-        #labels = data.to(device)
         #forward
         scores = model(data)
         loss = criterion(scores,labels)
@@ -95,10 +84,6 @@ for epoch in range(epochs):
 
             scores = model(data)
             _, predictions = scores.max(1)
-            #print(f"SCORE {scores}")
-            #print(f"type scores{type(scores)}")
-            #print(f"leng scores{(scores.shape)}")
-            #sys.exit()
             num_correct += (predictions == labels).sum()
             num_samples += predictions.size(0)
             acc = float(num_correct) / float(num_samples) * 100
@@ -107,11 +92,6 @@ for epoch in range(epochs):
         print(f"validation accuracy is: {round(acc, 2)}%")
 print(f"best validation acc is: {round(best_acc,2)}%")
 
-
-'''
-TODO: Train a model for multiple epochs, measure the classification accuracy on the validation dataset throughout the training and save the best performing model. 
-After training, measure the classification accuracy of the best perfroming model on the test dataset. Document your findings in the report.
-'''
 
 def check_accuracy(loader,model):
     num_correct = 0
