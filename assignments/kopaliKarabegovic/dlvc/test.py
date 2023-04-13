@@ -80,7 +80,7 @@ class Accuracy(PerformanceMeasure):
         target must have shape (s,) and values between 0 and c-1 (true class labels).
         Raises ValueError if the data shape or values are unsupported.
         '''
-        print(prediction)
+
         if len(prediction.shape) != 2 or len(target.shape) != 1:
             raise ValueError(
                 'Input shapes must be (s,c) and (s,), respectively.')
