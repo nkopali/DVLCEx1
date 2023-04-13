@@ -107,7 +107,7 @@ class Accuracy(PerformanceMeasure):
         if self._total == 0:
             return "accuracy: 0.000"
         else:
-            return f"accuracy: {self.accuracy():.3f}"
+            return f"{self.accuracy():.3f}"
 
     def __lt__(self, other) -> bool:
         '''

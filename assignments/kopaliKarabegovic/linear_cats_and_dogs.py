@@ -1,3 +1,4 @@
+from visualization import Visualization
 from dlvc.datasets.pets import PetsDataset
 from dlvc.dataset import Subset
 from dlvc.batches import BatchGenerator
@@ -26,10 +27,10 @@ op = ops.chain([
     ops.mul(1/127.5),
 ])
 
-training_data = PetsDataset("assignments\cifar-10-batches-py", Subset.TRAINING)
-test_data = PetsDataset("assignments\cifar-10-batches-py", Subset.TEST)
+training_data = PetsDataset("../cifar-10-batches-py", Subset.TRAINING)
+test_data = PetsDataset("../cifar-10-batches-py", Subset.TEST)
 validation_data = PetsDataset(
-    "assignments\cifar-10-batches-py", Subset.VALIDATION)
+    "../cifar-10-batches-py", Subset.VALIDATION)
 
 num_of_samples_per_batch = 200
 train_batches = BatchGenerator(
@@ -50,6 +51,8 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 print("Start of the training")
 best_acc_val = Accuracy()
 acc_val = Accuracy()
+loss_list = []
+acc_list = []
 for epoch in range(epochs):
 
     print(f"epoch {epoch+1}")
@@ -74,6 +77,7 @@ for epoch in range(epochs):
         optimizer.step()
 
     print(f"train loss: {total_loss:.4f}")
+    loss_list.append(total_loss)
 
     # model eval for training data
     model.eval()
@@ -90,10 +94,17 @@ for epoch in range(epochs):
             scores = model(data)
             acc_val.update(scores.detach().numpy(), labels.numpy())
         print(f"val acc: {acc_val.__str__()}")
+        acc_list.append(acc_val.__str__())
 
         if best_acc_val.__lt__(acc_val):
             best_acc_val._correct = acc_val._correct
             best_acc_val._total = acc_val._total
+
+vis = Visualization(range(epochs), loss_list, "Training Loss", "Loss")
+vis.plot()
+
+vis = Visualization(range(epochs), acc_list, "Validation Accuracy", "Accuracy")
+vis.plot()
 
 print("-" * 50)
 print(f"val acc (best): {best_acc_val.__str__()}")
