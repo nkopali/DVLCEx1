@@ -100,11 +100,11 @@ for epoch in range(epochs):
             best_acc_val._correct = acc_val._correct
             best_acc_val._total = acc_val._total
 
-vis = Visualization(range(epochs), loss_list, "Training Loss", "Loss")
-vis.plot()
+# vis = Visualization(range(epochs), loss_list, "Training Loss", "Loss")
+# vis.plot()
 
-vis = Visualization(range(epochs), acc_list, "Validation Accuracy", "Accuracy")
-vis.plot()
+# vis = Visualization(range(epochs), acc_list, "Validation Accuracy", "Accuracy")
+# vis.plot()
 
 print("-" * 50)
 print(f"val acc (best): {best_acc_val.__str__()}")
